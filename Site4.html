@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allan Neves</title>
+    <style>
+        body {
+            background-color: #2a1b3d; /* Fundo */
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #f0e6ff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Pedios */
+        .skyline {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            display: flex;
+            align-items: flex-end;
+            z-index: 0;
+        }
+
+        .building {
+            background-color: rgba(106, 76, 147, 0.4); /* transparência */
+            margin-right: -2%; /* Sobreposição */
+            flex-grow: 1;
+            min-width: 5%;
+            max-width: 15%;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        /* Variações de altura e transparência para os prédios */
+        .building:nth-child(1) { height: 60%; opacity: 0.6; }
+        .building:nth-child(2) { height: 80%; opacity: 0.5; }
+        .building:nth-child(3) { height: 50%; opacity: 0.7; }
+        .building:nth-child(4) { height: 70%; opacity: 0.4; }
+        .building:nth-child(5) { height: 90%; opacity: 0.5; }
+        .building:nth-child(6) { height: 65%; opacity: 0.6; }
+        .building:nth-child(7) { height: 55%; opacity: 0.7; }
+        .building:nth-child(8) { height: 75%; opacity: 0.5; }
+        .building:nth-child(9) { height: 85%; opacity: 0.4; }
+        .building:nth-child(10) { height: 45%; opacity: 0.8; }
+        .building:nth-child(11) { height: 95%; opacity: 0.3; }
+        .building:nth-child(12) { height: 60%; opacity: 0.6; }
+
+        h1 {
+            color: #e0d0ff; /* Roxo muito claro */
+            margin-bottom: 40px;
+            font-size: 3em;
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out forwards;
+            text-shadow: 0 2px 10px rgba(224, 208, 255, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            width: 80%;
+            max-width: 800px;
+            padding: 50px;
+            text-align: center;
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.3s;
+            z-index: 2;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .blocks-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .block {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: none;
+            color: #4a3a6a;
+            padding: 30px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: left;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .block:hover {
+            background-color: #6a4c93;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(106, 76, 147, 0.3);
+        }
+
+        .block h2 {
+            margin: 0 0 15px 0;
+            font-size: 1.4em;
+            font-weight: 500;
+        }
+
+        .block p {
+            margin: 0;
+            font-size: 1em;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(42, 27, 61, 0.95);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 50px;
+            border-radius: 10px;
+            width: 70%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            position: relative;
+            color: #4a3a6a;
+            animation: modalFadeIn 0.5s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #6a4c93;
+            transition: transform 0.2s ease;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .logo {
+            font-weight: bold;
+            color: #6a4c93;
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Janelas dos prédios */
+        .building::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 60%, rgba(255, 255, 255, 0.1) 60%);
+            background-size: 100% 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="skyline">
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+        <div class="building"></div>
+    </div>
+
+    <h1 id="main-title">Allan Fernandes da Silva Neves</h1>
+      
+    <div class="container">
+        <div class="logo">Gestão de Projetos, Planejamento Estratégico e Controle de Desempenho.</div>
+        
+        <div class="blocks-container">
+
+            <div class="block" onclick="openModal('Experiência', `
+        <h3 style='color: #49006b; margin-bottom: 15px;'><strong>ORIENTE CONSTRUÇÃO CIVIL</strong> (2025 - Atual) Analista de engenharia:</h3>
+        <ul style='padding-left: 20px; margin: 15px 0;'>
+            <p>Gestão de contratos de obras públicas: Análise de CAPEX, identificação gestão de riscos e rerratificação de contratos, garantindo conformidade legal e eficiência operacional. Atuação em projetos de obras públicas de infraestrutura, realizando utilização da SINAPI e EMOP. Comprometido com a entrega de resultados mensuráveis e a saúde econômico-financeira do projeto.</p>
+        </ul>
+        <h3 style='color: #49006b; margin-bottom: 15px;'><strong>EFFICO SANEAMENTO</strong> (2024 - 2025) Analista de Planejamento:</h3>
+        <ul style='padding-left: 20px; margin: 15px 0;'>
+            <p>Gestão de projetos de saneamento básico, atuando no planejamento e controle de obras, desde a elaboração de cronogramas até a entrega final, fechamento de medições. </p>
+            <p>Análise de indicadores financeiros (KPIs) e de performance, com foco em melhoria contínua e otimização de processos e elaboração de EAP(estrutura analítica de projeto).</p>
+            <p>Realização de análise de riscos e desenvolvimento de planos de mitigação para garantir a execução eficiente dos projetos.</p>
+            <p>Acompanhamento técnico em obras, controle de qualidade eassegurando a conformidade com normas técnicas e padrões. </p>
+            <p>Utilização de ferramentas de gestão como Microsoft Project, sistemas ERP (TOTVS), Power BI, Click UP e Trello.</p>
+            <p>Colaboração com equipes multidisciplinares, promovendo a integração entre planejamento, projetos, execução e fiscalização de obras.</p>
+        </ul>
+        <h3 style='color: #49006b; margin-bottom: 15px;'><strong>DIAGRAMA ENGENHARIA E PROJETOS</strong> (2021 - 2022) Estágio em engenharia civil:</h3>
+        <ul style='padding-left: 20px; margin: 15px 0;'>
+            <p>Acompanhamento técnico em obras, fiscalizando atividades. </p>
+            <p>Desenvolvimento de projetos arquitetônicos em AutoCAD e apoio na medição de quantitativos e cotação de materiais para controle de custos.</p>
+            <p>Vivência prática em gestão de prazos, cronogramas e logística de materiais, com participação ativa no planejamento e execução de obras.</p>
+        </ul>
+         `)">
+        <h2>Experiência</h2>
+        <p>Vivências e Maturidade Profissional.</p>
+        </div>
+
+            <div class="block" onclick="openModal('Formação', `
+    <h3 style='color: #49006b; margin-bottom: 15px;'>Graduação:</h3>
+    <ul style='padding-left: 20px; margin: 15px 0;'>
+        <li style='margin-bottom: 8px;'><strong>2022-2024:</strong> Pós-Graduação em Auditoria e Perícia Ambiental – Convênio Técnico Universidade Estácio De Sá e Harvard Business Publishing</li>
+        <li style='margin-bottom: 8px;'><strong>2017-2022:</strong> Graduado em Engenharia Civil - Universidade Estácio De Sá - UNESA.</li>
+    </ul>
+    <h3 style='color: #49006b; margin-bottom: 15px;'>Licenças & Certificados:</h3>
+    <ul style='padding-left: 20px; margin: 15px 0;'>
+        <li style='margin-bottom: 8px;'><strong>2024:</strong> CPA-10 – ANBIMA. </li>
+        <li style='margin-bottom: 8px;'><strong>2023:</strong> Introdução Ao MS Project – SENAC PR </li>
+        <li style='margin-bottom: 8px;'><strong>2023:</strong> Título Profissional de Engenheiro Civil – CREA RJ. </li>
+        <li style='margin-bottom: 8px;'><strong>2023:</strong> PowerBI: Iniciação Ao desenvolvimento De Dashboards – FIRJAN SENAI RJ. </li>
+        <li style='margin-bottom: 8px;'><strong>2022:</strong> AutoCAD 2D – SENAC RJ. </li>
+    </ul>
+    <p style='margin-top: 20px;'><strong> Conhecimentos gerais:</strong> Office 365, AutoCAD 2D, Revit, Gimp, Power BI, MS Project, Trello, Qgis, ClickUp
+    </p>
+`)">
+    <h2>Formação</h2>
+    <p>Graduação, cursos e competências gerais.</p>
+</div>
+
+            <div class="block" onclick="openModal('Competências Gerais', `
+    <h3 style='color: #49006b; margin-bottom: 15px;'>Competências:</h3>
+    <ul style='padding-left: 20px; margin: 15px 0;'>
+        <li style='margin-bottom: 8px;'>Gestão de Projetos</li>
+        <li style='margin-bottom: 8px;'>Gestão de Cronogramas (MS Project)</li>
+        <li style='margin-bottom: 8px;'>Métodos Ágeis</li>
+        <li style='margin-bottom: 8px;'>Lean Manufacturing</li>
+        <li style='margin-bottom: 8px;'>Otimização de Processos</li>
+        <li style='margin-bottom: 8px;'>Elaboração de Relatórios e Indicadores (KPI)</li>
+        <li style='margin-bottom: 8px;'>Ferramentas de BI</li>
+        <li style='margin-bottom: 8px;'>Conhecimento em ERP</li>
+    </ul>
+    <h3 style='color: #49006b; margin-bottom: 15px;'>Idiomas:</h3>
+    <ul style='padding-left: 20px; margin: 15px 0;'>
+        <li style='margin-bottom: 8px;'>Inglês (Avançado)</li>
+        <li style='margin-bottom: 8px;'>Alemão (Intermediário)</li>
+        <li style='margin-bottom: 8px;'>Espanhol (Básico)</li>
+    </ul>
+`)">
+    <h2>Competências Gerais</h2>
+    <p>Áreas do conhecimento e idiomas</p>
+</div>
+
+
+        <div class="block" onclick="openModal('Contato', `
+        <li style='margin-bottom: 15px;'><strong>E-mail:</strong></li> <a href='mailto:allanfernandesn@gmail.com'> allanfernandesn@gmail.com </a>
+        <p></p>
+        <li style='margin-bottom: 15px;'><strong>Whatsapp:</strong></li> <a href='https://wa.me/5521999426158'> (21)99942-6158 </a>
+        <p></p>
+        <li style='margin-bottom: 15px;'><strong>Linkedin:</strong></li> <a href='https://www.linkedin.com/in/allan-neves/'> Allan.neves </a>
+ `)">
+ 
+
+ <h2>Contato</h2>
+ <p>Informações para entrar em contato.</p>
+            </div>
+
+            
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-text"></p>
+        </div>
+    </div>
+
+    <script>
+        // Efeito de aparecimento gradual do título
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const title = document.getElementById('main-title');
+            title.style.opacity = '0';
+            setTimeout(() => {
+                title.style.opacity = '1';
+            }, 300);
+            
+            // Efeito parallax sutil nos prédios
+            window.addEventListener('mousemove', (e) => {
+                const skyline = document.querySelector('.skyline');
+                const xPos = e.clientX / window.innerWidth;
+                const yPos = e.clientY / window.innerHeight;
+                skyline.style.transform = `translateX(${xPos * 10}px) translateY(${yPos * 5}px)`;
+            });
+        });
+
+        // Funções do modal
+        function openModal(title, htmlContent) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-text').innerHTML = htmlContent; // Note o innerHTML aqui
+    document.getElementById('modal').style.display = 'flex';
+}
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <!-- ... (mantenha o restante do head existente) ... -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ... (mantenha todos os estilos existentes) ... */
+
+        /* Novo estilo para o ícone do LinkedIn */
+        .linkedin-logo {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: #0077b5; /* Azul do LinkedIn */
+            font-size: 2.5em;
+            z-index: 10;
+            transition: transform 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .linkedin-logo:hover {
+            transform: scale(1.1);
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="https://www.linkedin.com/in/allan-neves" target="_blank" class="linkedin-logo">
+        <i class="fab fa-linkedin"></i>
+    </a>
+
+</body>
+</html>
+
